@@ -20,4 +20,4 @@ cmake="0.1"
 pkg-config="0.3"
 
 [dependencies.coordinates]
-git = "https://github.com/cubehub/rust-coordinates.git"
+git = "https://github.com/connerebbinghaus/rust-coordinates.git"
