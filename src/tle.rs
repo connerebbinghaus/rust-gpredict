@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-use ffipredict;
+use crate::ffipredict;
 
 use std::ffi::CString;
 use libc::c_char;
@@ -33,7 +33,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
 
-#[derive(Debug, Clone, PartialEq, RustcEncodable, RustcDecodable)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Tle {
     pub name: String,
     pub line1: String,
@@ -90,7 +90,7 @@ fn trim(line: &String) -> String {
     let chars_to_trim: &[char] = &['\r', '\n'];
     let mut l: String;
     l = line.trim_matches(chars_to_trim).to_string();
-    l = l.trim_right().to_string();
+    l = l.trim_end().to_string();
     l
 }
 

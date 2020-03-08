@@ -22,17 +22,16 @@
  * SOFTWARE.
  */
 
-use time;
 use coordinates::LLA;
 
 
 #[derive(Default, Debug)]
 pub struct Sat {
     /// next AOS
-    pub aos:                Option<time::Tm>,
+    pub aos:                Option<chrono::DateTime<chrono::Utc>>,
 
     /// next LOS
-    pub los:                Option<time::Tm>,
+    pub los:                Option<chrono::DateTime<chrono::Utc>>,
 
     /// azimuth [deg]
     pub az_deg:             f64,

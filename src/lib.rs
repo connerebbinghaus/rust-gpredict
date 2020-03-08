@@ -24,20 +24,12 @@
 
 #![deny(missing_debug_implementations, unstable_features, unused_import_braces, unused_qualifications)]
 
-
-#[macro_use]
-extern crate log;
-extern crate libc;
-extern crate time;
-extern crate rustc_serialize;
-extern crate coordinates;
-
 mod julian_time;
 mod sat;
 mod ffipredict;
 mod tle;
 mod predict;
 
-pub use self::tle::Tle;
-pub use self::predict::{Location, Predict};
-pub use self::sat::Sat;
+pub use tle::Tle;
+pub use predict::{Location, Predict};
+pub use sat::Sat;

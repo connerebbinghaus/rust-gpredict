@@ -23,13 +23,12 @@
  */
 
 use std::default::Default;
-use time;
 use coordinates::LLA;
 
-use ::ffipredict;
-use ::tle;
-use ::sat::Sat;
-use ::julian_time::{julian_timestamp, julian_to_unix};
+use crate::ffipredict;
+use crate::tle;
+use crate::sat::Sat;
+use crate::julian_time::{julian_timestamp, julian_to_unix};
 
 pub type Location = LLA;
 
@@ -106,7 +105,7 @@ impl Predict {
         Predict{sat: sat, p_sat: sat_t, p_qth: qth}
     }
 
-    pub fn update(&mut self, timeoption: Option<time::Tm>) {
+    pub fn update(&mut self, timeoption: Option<chrono::DateTime<chrono::Utc>>) {
         let juliantime = match timeoption {
             Some(t) => julian_timestamp(t),
             None => unsafe {ffipredict::get_current_daynum()}
@@ -114,11 +113,11 @@ impl Predict {
 
         // we do not have AOS with some satellites, therefore option is used
         let aos = match unsafe {ffipredict::find_aos(&mut self.p_sat, &mut self.p_qth, juliantime, 1.0)} {
-            0.0 => None,
+            f if f == 0.0 => None,
             aos => Some(julian_to_unix(aos)),
         };
         let los = match unsafe {ffipredict::find_los(&mut self.p_sat, &mut self.p_qth, juliantime, 1.0)} {
-            0.0 => None,
+            f if f == 0.0 => None,
             los => Some(julian_to_unix(los)),
         };
 

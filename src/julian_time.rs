@@ -22,23 +22,24 @@
  * SOFTWARE.
  */
 
-use time;
+use chrono::Datelike;
+use chrono::Timelike;
+use chrono::TimeZone;
 
-// Calculates Julian Day Number
-pub fn julian_timestamp(t: time::Tm) -> f64 {
-    let year = t.tm_year + 1900;
-    let month = t.tm_mon + 1;
+/// Calculates Julian Day Number
+pub fn julian_timestamp(t: chrono::DateTime<chrono::Utc>) -> f64 {
+    let year = t.year();
+    let month = t.month();
 
     julian_date_of_year(year) +
-        day_of_the_year(year, month, t.tm_mday) as f64 +
-        fraction_of_day(t.tm_hour, t.tm_min, t.tm_sec) +
-        t.tm_nsec as f64 / 1000_f64 / 8.64e+10
+        day_of_the_year(year, month as i32, t.day() as i32) as f64 +
+        fraction_of_day(t.hour() as i32, t.minute() as i32, t.second() as i32) +
+        t.nanosecond() as f64 / 1000_f64 / 8.64e+10
 }
 
-pub fn julian_to_unix(julian: f64) -> time::Tm {
+pub fn julian_to_unix(julian: f64) -> chrono::DateTime<chrono::Utc> {
     let unix = (julian - 2440587.5) * 86400.;
-    let t = time::Timespec::new(unix.trunc() as i64, unix.fract() as i32);
-    time::at(t)
+    chrono::Utc.timestamp(unix.trunc() as i64, unix.fract() as u32)
 }
 
 fn fraction_of_day(h: i32, m: i32, s: i32) -> f64{
@@ -78,10 +79,11 @@ fn day_of_the_year(yr: i32, mo: i32, dy: i32) -> i32 {
 
 #[test]
 fn test_julian_timestamp() {
+
     // http://en.wikipedia.org/wiki/Julian_day#Converting_Julian_or_Gregorian_calendar_date_to_Julian_Day_Number
-    let t = time::strptime("2000-1-1 12:00:00", "%Y-%m-%d %H:%M:%S").unwrap();
+    let t = chrono::Utc.datetime_from_str("2000-1-1 12:00:00", "%Y-%m-%d %H:%M:%S").unwrap();
     assert_eq!(julian_timestamp(t), 2451545.0);
 
-    let t = time::strptime("1970-1-1 00:00:00", "%Y-%m-%d %H:%M:%S").unwrap();
+    let t = chrono::Utc.datetime_from_str("1970-1-1 00:00:00", "%Y-%m-%d %H:%M:%S").unwrap();
     assert_eq!(julian_timestamp(t), 2440587.5);
 }
